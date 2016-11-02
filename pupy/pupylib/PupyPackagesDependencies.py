@@ -20,8 +20,33 @@ packages_dependencies={
         (LOAD_PACKAGE, "win32security"),
         (LOAD_PACKAGE, "win32con"),
     ],
+    "scapy" : [
+        (LOAD_PACKAGE, "gzip"),
+        (LOAD_PACKAGE, "_strptime"),
+        (LOAD_PACKAGE, "calendar"),
+    ],
     "pyaudio" : [
         (LOAD_PACKAGE, "_portaudio"),
+    ],
+    "scapy" : [
+        (LOAD_PACKAGE, "gzip"),
+        (LOAD_PACKAGE, "_strptime"),
+        (LOAD_PACKAGE, "calendar"),
+    ],
+    "OpenSSL" : [
+        (LOAD_PACKAGE, "six"),
+        (LOAD_PACKAGE, "enum"),
+        (LOAD_PACKAGE, "cryptography"),
+        (LOAD_PACKAGE, "_cffi_backend"),
+        (LOAD_PACKAGE, "plistlib"),
+        (LOAD_PACKAGE, "uu"),
+        (LOAD_PACKAGE, "quopri"),
+        (LOAD_PACKAGE, "pyparsing"),
+        (LOAD_PACKAGE, "pkg_resources"),
+        (LOAD_PACKAGE, "pprint"),
+        (LOAD_PACKAGE, "ipaddress"),
+        (LOAD_PACKAGE, "idna"),
+        (LOAD_PACKAGE, "unicodedata"),
     ],
 
 

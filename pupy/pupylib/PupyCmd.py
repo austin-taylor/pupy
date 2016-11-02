@@ -189,6 +189,8 @@ class PupyCmd(cmd.Cmd):
         except Exception:
             pass
         self.aliases={}
+        for m in self.pupsrv.get_aliased_modules():
+            self.aliases[m]=m
         try:
             for command, alias in self.config.items("aliases"):
                 logging.debug("adding alias: %s => %s"%(command, alias))
@@ -258,7 +260,7 @@ class PupyCmd(cmd.Cmd):
                 if left:
                     newargs_str+=" "+' '.join(left)
                 if modargs.arguments:
-                    newargs_str+=" '"+(' '.join(modargs.arguments)).replace("'","'\\''")+"'"
+                    newargs_str+=' '+' '.join(["'"+x.replace("'","'\\''")+"'" for x in modargs.arguments])
                 self.do_run(newargs_str.strip())
         else:
             self.display_error("Unknown syntax: %s"%line)
@@ -339,7 +341,7 @@ class PupyCmd(cmd.Cmd):
             for command,doc in cmds_doc:
                 if doc is None:
                     doc=""
-                self.stdout.write("- {:<10}    {}\n".format(command, color(doc.strip(),'grey')))
+                self.stdout.write("- {:<15}    {}\n".format(command, color(doc.title().strip(),'grey')))
     
     @staticmethod
     def format_log(msg):
@@ -425,12 +427,21 @@ class PupyCmd(cmd.Cmd):
     
     def do_list_modules(self, arg):
         """ List available modules with a brief description (the first description line) """
+        system = ''
+        if self.default_filter:
+            system = self.pupsrv.get_clients(self.default_filter)[0].desc['platform'].lower()
+            self.display_success("List modules compatible with the selected host: %s" % system)
+        else:
+            self.display_success("List all modules")
+
         for mod in sorted([x for x in self.pupsrv.iter_modules()], key=(lambda x:x.category)):
-            doc=mod.__doc__
-            if not doc:
-                doc=""
-            doc=doc.strip()
-            self.stdout.write("{:<20}    {}\n".format("%s/%s"%(mod.category,mod.get_name()), color(doc.split("\n",1)[0],'grey')))
+            if mod.is_module:
+                if (self.default_filter and (system in mod.compatible_systems or not mod.compatible_systems)) or (not self.default_filter):
+                    if mod.__doc__: 
+                        doc = mod.__doc__.strip()
+                    else:
+                       doc = ''
+                    self.stdout.write("{:<25}    {}\n".format("%s/%s"%(mod.category,mod.get_name()), color(doc.title().split("\n",1)[0],'grey')))
 
     def do_sessions(self, arg):
         """ list/interact with established sessions """

@@ -19,8 +19,18 @@ class GetInfo(PupyModule):
         for k in commonKeys:
             infos+="{:<10}: {}\n".format(k,self.client.desc[k])
         if self.client.is_windows():
+            self.client.load_package("psutil")
+            self.client.load_package("pupwinutils.security")
             for k in windKeys:
                 infos+="{:<10}: {}\n".format(k,self.client.desc[k])
+            currentUserIsLocalAdmin = self.client.conn.modules["pupwinutils.security"].can_get_admin_access()
+            desc = "local_adm"
+            if currentUserIsLocalAdmin == True:
+                infos+="{:<10}: {}\n".format(desc,"Yes")
+            elif currentUserIsLocalAdmin == False:
+                infos+="{:<10}: {}\n".format(desc,"No")
+            else:
+                infos+="{:<10}: {}\n".format(desc,"?")
         elif self.client.is_linux():
             for k in linuxKeys:
                 infos+="{:<10}: {}\n".format(k,self.client.desc[k])

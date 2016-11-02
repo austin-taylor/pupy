@@ -22,8 +22,4 @@ class PortScanner(object):
         for req,resp in ans:
             res+=format_response(resp)
         return res
-if __name__=='__main__':
-    p=PortScanner()
-    print p.scan("192.168.2.133",[443,80,22])
-
                 
